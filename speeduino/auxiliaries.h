@@ -19,6 +19,7 @@ void fanControl(void);
 void airConControl(void);
 bool READ_AIRCON_REQUEST(void);
 void wmiControl(void);
+void fuelPumpControl();
 
 #define SIMPLE_BOOST_P  1
 #define SIMPLE_BOOST_I  1
@@ -107,6 +108,8 @@ void fanInterrupt(void);
 
 extern uint16_t vvt_pwm_max_count; //Used for variable PWM frequency
 extern uint16_t boost_pwm_max_count; //Used for variable PWM frequency
+
+byte fpOffDelay;
 
 void boostInterrupt(void);
 void vvtInterrupt(void);

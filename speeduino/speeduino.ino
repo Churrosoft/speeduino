@@ -61,7 +61,7 @@ uint16_t staged_req_fuel_mult_pri = 0;
 uint16_t staged_req_fuel_mult_sec = 0;   
 #ifndef UNIT_TEST // Scope guard for unit testing
 void setup(void)
-{     
+{
 
   currentStatus.initialisationComplete = false; //Tracks whether the initialiseAll() function has run completely
   initialiseAll();
@@ -106,7 +106,7 @@ void loop(void)
       {
         serialReceive();
       }
-      
+
       //Check for any CAN comms requiring action 
       #if defined(secondarySerial_AVAILABLE)
         //if can or secondary serial interface is enabled then check for requests.
@@ -115,21 +115,21 @@ void loop(void)
           if ( ((mainLoopCount & 31) == 1) || (secondarySerial.available() > SERIAL_BUFFER_THRESHOLD) )
           {
             if (secondarySerial.available() > 0)  { secondserial_Command(); }
-          } 
+          }
         }
       #endif
       #if defined (NATIVE_CAN_AVAILABLE)
         if (configPage9.enable_intcan == 1) // use internal can module
-        {            
+        {
           //check local can module
           // if ( BIT_CHECK(LOOP_TIMER, BIT_TIMER_15HZ) or (CANbus0.available())
-          while (CAN_read()) 
+          while (CAN_read())
           {
             can_Command();
             readAuxCanBus();
             if (configPage2.canWBO > 0) { receiveCANwbo(); }
           }
-        }   
+        }
       #endif
           
     if(currentLoopTime > micros_safe())
@@ -186,8 +186,7 @@ void loop(void)
       //This is a safety check. If for some reason the interrupts have got screwed up (Leading to 0rpm), this resets them.
       //It can possibly be run much less frequently.
       //This should only be run if the high speed logger are off because it will change the trigger interrupts back to defaults rather than the logger versions
-      // FIXME: deshabilitado porque en este caso entrariamos a los triggers con un estado corrupto de configuracion (ya que no se esta leyendo)
-      // if( (currentStatus.toothLogEnabled == false) && (currentStatus.compositeTriggerUsed == 0) ) { initialiseTriggers(); }
+      if( (currentStatus.toothLogEnabled == false) && (currentStatus.compositeTriggerUsed == 0) ) { initialiseTriggers(); }
 
       VVT1_PIN_LOW();
       VVT2_PIN_LOW();
@@ -197,7 +196,7 @@ void loop(void)
     }
     //***Perform sensor reads***
     //-----------------------------------------------------------------------------------------------------
-    if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_1KHZ)) //Every 1ms. NOTE: This is NOT guaranteed to run at 1kHz on AVR systems. It will run at 1kHz if possible or as fast as loops/s allows if not. 
+    if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_1KHZ)) //Every 1ms. NOTE: This is NOT guaranteed to run at 1kHz on AVR systems. It will run at 1kHz if possible or as fast as loops/s allows if not.
     {
       BIT_CLEAR(TIMER_mask, BIT_TIMER_1KHZ);
       readMAP();
@@ -239,7 +238,7 @@ void loop(void)
       //updateFullStatus();
       checkProgrammableIO();
       idleControl(); //Perform any idle related actions. This needs to be run at 10Hz to align with the idle taper resolution of 0.1s
-      
+
       // Air conditioning control
       airConControl();
 
@@ -270,13 +269,13 @@ void loop(void)
       {
         readO2();
         readO2_2();
-      }      
+      }
       #ifdef SD_LOGGING
         if(configPage13.onboard_log_file_rate == LOGGER_RATE_30HZ) { writeSDLogEntry(); }
       #endif
 
       //Check for any outstanding EEPROM writes.
-      if( (isEepromWritePending() == true) && (serialStatusFlag == SERIAL_INACTIVE) && (micros() > deferEEPROMWritesUntil)) { writeAllConfig(); } 
+      if( (isEepromWritePending() == true) && (serialStatusFlag == SERIAL_INACTIVE) && (micros() > deferEEPROMWritesUntil)) { writeAllConfig(); }
     }
     if (BIT_CHECK(LOOP_TIMER, BIT_TIMER_4HZ))
     {
@@ -296,12 +295,12 @@ void loop(void)
 
       #ifdef SD_LOGGING
         if(configPage13.onboard_log_file_rate == LOGGER_RATE_4HZ) { writeSDLogEntry(); }
-        syncSDLog(); //Sync the SD log file to the card 4 times per second. 
-      #endif  
+        syncSDLog(); //Sync the SD log file to the card 4 times per second.
+      #endif
       
       currentStatus.fuelPressure = getFuelPressure();
       currentStatus.oilPressure = getOilPressure();
-      
+
       if(auxIsEnabled == true)
       {
         //TODO dazq to clean this right up :)
@@ -474,7 +473,7 @@ void loop(void)
       #if INJ_CHANNELS >= 8
       uint16_t injector8StartAngle = 0;
       #endif
-      
+
       //Check that the duty cycle of the chosen pulsewidth isn't too high.
       uint16_t pwLimit = calculatePWLimit();
       //Apply the pwLimit if staging is disabled and engine is not cranking
@@ -661,7 +660,7 @@ void loop(void)
                 PWdivTimerPerDegree = timeToAngleDegPerMicroSec(currentStatus.PW4); //Need to redo this for staging PW as it will be dramatically different to PW1 when staging
                 injector4StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel1InjDegrees, currentStatus.injAngle);
                 injector5StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel2InjDegrees, currentStatus.injAngle);
-                injector6StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel3InjDegrees, currentStatus.injAngle); 
+                injector6StartAngle = calculateInjectorStartAngle(PWdivTimerPerDegree, channel3InjDegrees, currentStatus.injAngle);
               }
             }
           #endif
@@ -778,10 +777,10 @@ void loop(void)
       if ( (currentStatus.launchingHard == true) && (configPage6.lnchHardLim < maxAllowedRPM) ) { maxAllowedRPM = configPage6.lnchHardLim; }
       maxAllowedRPM = maxAllowedRPM * 100; //All of the above limits are divided by 100, convert back to RPM
       if ( (currentStatus.flatShiftingHard == true) && (currentStatus.clutchEngagedRPM < maxAllowedRPM) ) { maxAllowedRPM = currentStatus.clutchEngagedRPM; } //Flat shifting is a special case as the RPM limit is based on when the clutch was engaged. It is not divided by 100 as it is set with the actual RPM
-    
+
       if( (configPage2.hardCutType == HARD_CUT_FULL) && (currentStatus.RPM > maxAllowedRPM) )
       {
-        //Full hard cut turns outputs off completely. 
+        //Full hard cut turns outputs off completely.
         switch(configPage6.engineProtectType)
         {
           case PROTECT_CUT_OFF:
@@ -807,22 +806,22 @@ void loop(void)
         }
       } //Hard cut check
       else if( (configPage2.hardCutType == HARD_CUT_ROLLING) && (currentStatus.RPM > (maxAllowedRPM + (configPage15.rollingProtRPMDelta[0] * 10))) ) //Limit for rolling is the max allowed RPM minus the lowest value in the delta table (Delta values are negative!)
-      { 
+      {
         uint8_t revolutionsToCut = 1;
         if(configPage2.strokes == FOUR_STROKE) { revolutionsToCut *= 2; } //4 stroke needs to cut for at least 2 revolutions
         if( (configPage4.sparkMode != IGN_MODE_SEQUENTIAL) || (configPage2.injLayout != INJ_SEQUENTIAL) ) { revolutionsToCut *= 2; } //4 stroke and non-sequential will cut for 4 revolutions minimum. This is to ensure no half fuel ignition cycles take place
 
         if(rollingCutLastRev == 0) { rollingCutLastRev = currentStatus.startRevolutions; } //First time check
         if ( (currentStatus.startRevolutions >= (rollingCutLastRev + revolutionsToCut)) || (currentStatus.RPM > maxAllowedRPM) ) //If current RPM is over the max allowed RPM always cut, otherwise check if the required number of revolutions have passed since the last cut
-        { 
+        {
           uint8_t cutPercent = 0;
           int16_t rpmDelta = currentStatus.RPM - maxAllowedRPM;
           if(rpmDelta >= 0) { cutPercent = 100; } //If the current RPM is over the max allowed RPM then cut is full (100%)
           else { cutPercent = table2D_getValue(&rollingCutTable, (rpmDelta / 10) ); } //
-          
+
 
           for(uint8_t x=0; x<max(maxIgnOutputs, maxInjOutputs); x++)
-          {  
+          {
             if( (cutPercent == 100) || (random1to100() < cutPercent) )
             {
               switch(configPage6.engineProtectType)
@@ -863,8 +862,8 @@ void loop(void)
                 )
               { BIT_SET(ignitionChannelsPending, x); } //Set this ignition channel as pending
               else { BIT_SET(ignitionChannelsOn, x); } //Turn on this ignition channel
-                
-              
+
+
               BIT_SET(fuelChannelsOn, x); //Turn on this fuel channel
             }
           }
@@ -884,11 +883,11 @@ void loop(void)
         currentStatus.engineProtectStatus = 0;
         //No engine protection active, so turn all the channels on
         if(currentStatus.startRevolutions >= configPage4.StgCycles)
-        { 
-          //Enable the fuel and ignition, assuming staging revolutions are complete 
-          ignitionChannelsOn = 0xff; 
-          fuelChannelsOn = 0xff; 
-        } 
+        {
+          //Enable the fuel and ignition, assuming staging revolutions are complete
+          ignitionChannelsOn = 0xff;
+          fuelChannelsOn = 0xff;
+        }
       }
 
 
@@ -898,7 +897,7 @@ void loop(void)
         uint32_t timeOut = calculateInjectorTimeout(fuelSchedule1, channel1InjDegrees, injector1StartAngle, crankAngle);
         if (timeOut>0U)
         {
-            setFuelSchedule(fuelSchedule1, 
+            setFuelSchedule(fuelSchedule1,
                       timeOut,
                       (unsigned long)currentStatus.PW1
                       );
@@ -922,7 +921,7 @@ void loop(void)
           uint32_t timeOut = calculateInjectorTimeout(fuelSchedule2, channel2InjDegrees, injector2StartAngle, crankAngle);
           if ( timeOut>0U )
           {
-            setFuelSchedule(fuelSchedule2, 
+            setFuelSchedule(fuelSchedule2,
                       timeOut,
                       (unsigned long)currentStatus.PW2
                       );
@@ -936,7 +935,7 @@ void loop(void)
           uint32_t timeOut = calculateInjectorTimeout(fuelSchedule3, channel3InjDegrees, injector3StartAngle, crankAngle);
           if ( timeOut>0U )
           {
-            setFuelSchedule(fuelSchedule3, 
+            setFuelSchedule(fuelSchedule3,
                       timeOut,
                       (unsigned long)currentStatus.PW3
                       );
@@ -950,7 +949,7 @@ void loop(void)
           uint32_t timeOut = calculateInjectorTimeout(fuelSchedule4, channel4InjDegrees, injector4StartAngle, crankAngle);
           if ( timeOut>0U )
           {
-            setFuelSchedule(fuelSchedule4, 
+            setFuelSchedule(fuelSchedule4,
                       timeOut,
                       (unsigned long)currentStatus.PW4
                       );
@@ -964,7 +963,7 @@ void loop(void)
           uint32_t timeOut = calculateInjectorTimeout(fuelSchedule5, channel5InjDegrees, injector5StartAngle, crankAngle);
           if ( timeOut>0U )
           {
-            setFuelSchedule(fuelSchedule5, 
+            setFuelSchedule(fuelSchedule5,
                       timeOut,
                       (unsigned long)currentStatus.PW5
                       );
@@ -978,7 +977,7 @@ void loop(void)
           uint32_t timeOut = calculateInjectorTimeout(fuelSchedule6, channel6InjDegrees, injector6StartAngle, crankAngle);
           if ( timeOut>0U )
           {
-            setFuelSchedule(fuelSchedule6, 
+            setFuelSchedule(fuelSchedule6,
                       timeOut,
                       (unsigned long)currentStatus.PW6
                       );
@@ -992,7 +991,7 @@ void loop(void)
           uint32_t timeOut = calculateInjectorTimeout(fuelSchedule7, channel7InjDegrees, injector7StartAngle, crankAngle);
           if ( timeOut>0U )
           {
-            setFuelSchedule(fuelSchedule7, 
+            setFuelSchedule(fuelSchedule7,
                       timeOut,
                       (unsigned long)currentStatus.PW7
                       );
@@ -1006,7 +1005,7 @@ void loop(void)
           uint32_t timeOut = calculateInjectorTimeout(fuelSchedule8, channel8InjDegrees, injector8StartAngle, crankAngle);
           if ( timeOut>0U )
           {
-            setFuelSchedule(fuelSchedule8, 
+            setFuelSchedule(fuelSchedule8,
                       timeOut,
                       (unsigned long)currentStatus.PW8
                       );
@@ -1032,7 +1031,7 @@ void loop(void)
 #if IGN_CHANNELS >= 5
           ignition5StartAngle -= 5;
 #endif
-#if IGN_CHANNELS >= 6          
+#if IGN_CHANNELS >= 6
           ignition6StartAngle -= 5;
 #endif
 #if IGN_CHANNELS >= 7
@@ -1207,7 +1206,7 @@ uint16_t PW(int REQ_FUEL, byte VE, long MAP, uint16_t corrections, int injOpen)
   uint16_t iAFR = 147;
 
   //100% float free version, does sacrifice a little bit of accuracy, but not much.
- 
+
   //iVE = ((unsigned int)VE << 7) / 100;
   iVE = div100(((uint16_t)VE << 7U));
 
@@ -1228,16 +1227,16 @@ uint16_t PW(int REQ_FUEL, byte VE, long MAP, uint16_t corrections, int injOpen)
   
   if ( (configPage2.includeAFR == true) && (configPage6.egoType == EGO_TYPE_WIDE) && (currentStatus.runSecs > configPage6.ego_sdelay) ) {
     //EGO type must be set to wideband and the AFR warmup time must've elapsed for this to be used
-    intermediate = rshift<7U>(intermediate * (uint32_t)iAFR);  
+    intermediate = rshift<7U>(intermediate * (uint32_t)iAFR);
   }
   if ( (configPage2.incorporateAFR == true) && (configPage2.includeAFR == false) ) {
     intermediate = rshift<7U>(intermediate * (uint32_t)iAFR);
   }
 
   //If corrections are huge, use less bitshift to avoid overflow. Sacrifices a bit more accuracy (basically only during very cold temp cranking)
-  if (corrections < 512 ) { 
-    intermediate = rshift<7U>(intermediate * div100(lshift<7U>(corrections))); 
-  } else if (corrections < 1024 ) { 
+  if (corrections < 512 ) {
+    intermediate = rshift<7U>(intermediate * div100(lshift<7U>(corrections)));
+  } else if (corrections < 1024 ) {
     intermediate = rshift<6U>(intermediate * div100(lshift<6U>(corrections)));
   } else {
     intermediate = rshift<5U>(intermediate * div100(lshift<5U>(corrections)));
@@ -1474,7 +1473,7 @@ void calculateStaging(uint32_t pwLimit)
   if( (configPage10.stagingEnabled == true) && (configPage2.nCylinders <= INJ_CHANNELS || configPage2.injType == INJ_TYPE_TBODY) && (currentStatus.PW1 > inj_opentime_uS) ) //Final check is to ensure that DFCO isn't active, which would cause an overflow below (See #267)
   {
     //Scale the 'full' pulsewidth by each of the injector capacities
-    currentStatus.PW1 -= inj_opentime_uS; //Subtract the opening time from PW1 as it needs to be multiplied out again by the pri/sec req_fuel values below. It is added on again after that calculation. 
+    currentStatus.PW1 -= inj_opentime_uS; //Subtract the opening time from PW1 as it needs to be multiplied out again by the pri/sec req_fuel values below. It is added on again after that calculation.
     uint32_t tempPW1 = div100((uint32_t)currentStatus.PW1 * staged_req_fuel_mult_pri);
 
     if(configPage10.stagingMode == STAGING_MODE_TABLE)
@@ -1483,19 +1482,19 @@ void calculateStaging(uint32_t pwLimit)
 
       uint8_t stagingSplit = get3DTableValue(&stagingTable, currentStatus.fuelLoad, currentStatus.RPM);
       currentStatus.PW1 = div100((100U - stagingSplit) * tempPW1);
-      currentStatus.PW1 += inj_opentime_uS; 
+      currentStatus.PW1 += inj_opentime_uS;
 
       //PW2 is used temporarily to hold the secondary injector pulsewidth. It will be assigned to the correct channel below
-      if(stagingSplit > 0) 
-      { 
+      if(stagingSplit > 0)
+      {
         BIT_SET(currentStatus.status4, BIT_STATUS4_STAGING_ACTIVE); //Set the staging active flag
-        currentStatus.PW2 = div100(stagingSplit * tempPW3); 
+        currentStatus.PW2 = div100(stagingSplit * tempPW3);
         currentStatus.PW2 += inj_opentime_uS;
       }
       else
       {
         BIT_CLEAR(currentStatus.status4, BIT_STATUS4_STAGING_ACTIVE); //Clear the staging active flag
-        currentStatus.PW2 = 0; 
+        currentStatus.PW2 = 0;
       }
     }
     else if(configPage10.stagingMode == STAGING_MODE_AUTO)
@@ -1506,22 +1505,22 @@ void calculateStaging(uint32_t pwLimit)
       if(tempPW1 > pwLimit)
       {
         BIT_SET(currentStatus.status4, BIT_STATUS4_STAGING_ACTIVE); //Set the staging active flag
-        uint32_t extraPW = tempPW1 - pwLimit + inj_opentime_uS; //The open time must be added here AND below because tempPW1 does not include an open time. The addition of it here takes into account the fact that pwLlimit does not contain an allowance for an open time. 
+        uint32_t extraPW = tempPW1 - pwLimit + inj_opentime_uS; //The open time must be added here AND below because tempPW1 does not include an open time. The addition of it here takes into account the fact that pwLlimit does not contain an allowance for an open time.
         currentStatus.PW1 = pwLimit;
         currentStatus.PW2 = udiv_32_16(extraPW * staged_req_fuel_mult_sec, staged_req_fuel_mult_pri); //Convert the 'left over' fuel amount from primary injector scaling to secondary
         currentStatus.PW2 += inj_opentime_uS;
       }
-      else 
+      else
       {
-        //If tempPW1 < pwLImit it means that the entire fuel load can be handled by the primaries and staging is inactive. 
+        //If tempPW1 < pwLImit it means that the entire fuel load can be handled by the primaries and staging is inactive.
         currentStatus.PW1 += inj_opentime_uS; //Add the open time back in
-        BIT_CLEAR(currentStatus.status4, BIT_STATUS4_STAGING_ACTIVE); //Clear the staging active flag 
+        BIT_CLEAR(currentStatus.status4, BIT_STATUS4_STAGING_ACTIVE); //Clear the staging active flag
         currentStatus.PW2 = 0; //Secondary PW is simply set to 0 as it is not required
-      } 
+      }
     }
 
     //Allocate the primary and secondary pulse widths based on the fuel configuration
-    switch (configPage2.nCylinders) 
+    switch (configPage2.nCylinders)
     {
       case 1:
         //Nothing required for 1 cylinder, channels are correct already
@@ -1572,7 +1571,7 @@ void calculateStaging(uint32_t pwLimit)
           currentStatus.PW2 = currentStatus.PW1;
         }
         break;
-        
+
       case 5:
         //No easily supportable 5 cylinder staging option unless there are at least 5 channels
         #if INJ_CHANNELS >= 5
@@ -1584,7 +1583,7 @@ void calculateStaging(uint32_t pwLimit)
             currentStatus.PW6 = currentStatus.PW2;
           #endif
         #endif
-        
+
           currentStatus.PW2 = currentStatus.PW1;
           currentStatus.PW3 = currentStatus.PW1;
           currentStatus.PW4 = currentStatus.PW1;
@@ -1640,8 +1639,8 @@ void calculateStaging(uint32_t pwLimit)
         break;
     }
   }
-  else 
-  { 
+  else
+  {
     if(maxInjOutputs >= 2) { currentStatus.PW2 = currentStatus.PW1; }
     else { currentStatus.PW2 = 0; }
     if(maxInjOutputs >= 3) { currentStatus.PW3 = currentStatus.PW1; }
@@ -1658,8 +1657,8 @@ void calculateStaging(uint32_t pwLimit)
     else { currentStatus.PW8 = 0; }
 
     BIT_CLEAR(currentStatus.status4, BIT_STATUS4_STAGING_ACTIVE); //Clear the staging active flag
-    
-  } 
+
+  }
 
 }
 
@@ -1676,12 +1675,12 @@ void checkLaunchAndFlatShift()
   if(currentStatus.clutchTrigger && (currentStatus.previousClutchTrigger != currentStatus.clutchTrigger) ) { currentStatus.clutchEngagedRPM = currentStatus.RPM; } //Check whether the clutch has been engaged or disengaged and store the current RPM if so
 
   //Default flags to off
-  currentStatus.launchingHard = false; 
-  BIT_CLEAR(currentStatus.status2, BIT_STATUS2_HLAUNCH); 
+  currentStatus.launchingHard = false;
+  BIT_CLEAR(currentStatus.status2, BIT_STATUS2_HLAUNCH);
   currentStatus.flatShiftingHard = false;
 
-  if (configPage6.launchEnabled && currentStatus.clutchTrigger && (currentStatus.clutchEngagedRPM < ((unsigned int)(configPage6.flatSArm) * 100)) && (currentStatus.TPS >= configPage10.lnchCtrlTPS) ) 
-  { 
+  if (configPage6.launchEnabled && currentStatus.clutchTrigger && (currentStatus.clutchEngagedRPM < ((unsigned int)(configPage6.flatSArm) * 100)) && (currentStatus.TPS >= configPage10.lnchCtrlTPS) )
+  {
     //Check whether RPM is above the launch limit
     uint16_t launchRPMLimit = (configPage6.lnchHardLim * 100);
     if( (configPage2.hardCutType == HARD_CUT_ROLLING) ) { launchRPMLimit += (configPage15.rollingProtRPMDelta[0] * 10); } //Add the rolling cut delta if enabled (Delta is a negative value)
@@ -1689,15 +1688,15 @@ void checkLaunchAndFlatShift()
     if(currentStatus.RPM > launchRPMLimit)
     {
       //HardCut rev limit for 2-step launch control.
-      currentStatus.launchingHard = true; 
-      BIT_SET(currentStatus.status2, BIT_STATUS2_HLAUNCH); 
+      currentStatus.launchingHard = true;
+      BIT_SET(currentStatus.status2, BIT_STATUS2_HLAUNCH);
     }
-  } 
-  else 
-  { 
+  }
+  else
+  {
     //If launch is not active, check whether flat shift should be active
-    if(configPage6.flatSEnable && currentStatus.clutchTrigger && (currentStatus.clutchEngagedRPM >= ((unsigned int)(configPage6.flatSArm * 100)) ) ) 
-    { 
+    if(configPage6.flatSEnable && currentStatus.clutchTrigger && (currentStatus.clutchEngagedRPM >= ((unsigned int)(configPage6.flatSArm * 100)) ) )
+    {
       uint16_t flatRPMLimit = currentStatus.clutchEngagedRPM;
       if( (configPage2.hardCutType == HARD_CUT_ROLLING) ) { flatRPMLimit += (configPage15.rollingProtRPMDelta[0] * 10); } //Add the rolling cut delta if enabled (Delta is a negative value)
 

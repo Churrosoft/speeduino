@@ -17,7 +17,7 @@
 
 static bool commandRequiresStoppedEngine(uint16_t buttonCommand)
 {
-  return ((buttonCommand >= TS_CMD_INJ1_ON) && (buttonCommand <= TS_CMD_IGN8_PULSED)) 
+  return ((buttonCommand >= TS_CMD_INJ1_ON) && (buttonCommand <= TS_CMD_IGN8_PULSED))
       || ((buttonCommand == TS_CMD_TEST_ENBL) || (buttonCommand == TS_CMD_TEST_DSBL));
 }
 
@@ -32,7 +32,7 @@ bool TS_CommandButtonsHandler(uint16_t buttonCommand)
   {
     return false;
   }
-  
+
   switch (buttonCommand)
   {
     case TS_CMD_TEST_DSBL: // cmd is stop
@@ -72,8 +72,12 @@ bool TS_CommandButtonsHandler(uint16_t buttonCommand)
       closeInjector8();
       #endif
 
+      currentStatus.fuelPumpOn = false;
+
       HWTest_INJ_Pulsed = 0;
       HWTest_IGN_Pulsed = 0;
+
+      BIT_CLEAR(currentStatus.testOutputs, 1);
       break;
 
     case TS_CMD_TEST_ENBL: // cmd is enable
@@ -183,6 +187,14 @@ bool TS_CommandButtonsHandler(uint16_t buttonCommand)
     case TS_CMD_INJ8_PULSED: // cmd group is for injector8 50% dc actions
       if( BIT_CHECK(currentStatus.testOutputs, 1) ) { BIT_SET(HWTest_INJ_Pulsed, INJ8_CMD_BIT); }
       if(!BIT_CHECK(HWTest_INJ_Pulsed, INJ8_CMD_BIT)) { closeInjector8(); } //Ensure this output is turned off (Otherwise the output may stay on permanently)
+      break;
+
+     case TS_CMD_FPUMP_ON: // cmd group is for fuel pump on actions
+      if( BIT_CHECK(currentStatus.testOutputs, 1) ){ currentStatus.fuelPumpOn = true;}
+      break;
+
+    case TS_CMD_FPUMP_OFF: // cmd group is for fuel pump off actions
+      if( BIT_CHECK(currentStatus.testOutputs, 1) ){ currentStatus.fuelPumpOn = false;}
       break;
 
     case TS_CMD_IGN1_ON: // cmd group is for spark1 on actions

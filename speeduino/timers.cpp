@@ -60,15 +60,15 @@ void initialiseTimers(void)
 
 static inline void applyOverDwellCheck(IgnitionSchedule &schedule, uint32_t targetOverdwellTime) {
   //Check first whether each spark output is currently on. Only check it's dwell time if it is
-  if ((schedule.Status == RUNNING) && (schedule.startTime < targetOverdwellTime)) { 
-    schedule.pEndCallback(); schedule.Status = OFF; 
+  if ((schedule.Status == RUNNING) && (schedule.startTime < targetOverdwellTime)) {
+    schedule.pEndCallback(); schedule.Status = OFF;
   }
 }
 
 //Timer2 Overflow Interrupt Vector, called when the timer overflows.
 //Executes every ~1ms.
 #if defined(CORE_AVR) //AVR chips use the ISR for this
-//This MUST be no block. Turning NO_BLOCK off messes with timing accuracy. 
+//This MUST be no block. Turning NO_BLOCK off messes with timing accuracy.
 ISR(TIMER2_OVF_vect, ISR_NOBLOCK) //cppcheck-suppress misra-c2012-8.2
 #else
 void oneMSInterval(void) //Most ARM chips can simply call a function
@@ -88,7 +88,7 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
   //Overdwell check
   uint32_t targetOverdwellTime = micros() - dwellLimit_uS; //Set a target time in the past that all coil charging must have begun after. If the coil charge began before this time, it's been running too long
   bool isCrankLocked = configPage4.ignCranklock && (currentStatus.RPM < currentStatus.crankRPM); //Dwell limiter is disabled during cranking on setups using the locked cranking timing. WE HAVE to do the RPM check here as relying on the engine cranking bit can be potentially too slow in updating
-  if ((configPage4.useDwellLim == 1) && (isCrankLocked != true)) 
+  if ((configPage4.useDwellLim == 1) && (isCrankLocked != true))
   {
     applyOverDwellCheck(ignitionSchedule1, targetOverdwellTime);
 #if IGN_CHANNELS >= 2
@@ -120,15 +120,15 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
   if( currentStatus.tachoSweepEnabled )
   {
     if( (currentStatus.engine != 0) || (ms_counter >= TACHO_SWEEP_TIME_MS) )  { currentStatus.tachoSweepEnabled = false; }  // Stop the sweep after SWEEP_TIME, or if real tach signals have started
-    else 
+    else
     {
       // Ramp the needle smoothly to the max over the SWEEP_RAMP time
       if( ms_counter < TACHO_SWEEP_RAMP_MS ) { tachoSweepAccum += map(ms_counter, 0, TACHO_SWEEP_RAMP_MS, 0, tachoSweepIncr); }
       else                                   { tachoSweepAccum += tachoSweepIncr;                                             }
-             
+
       // Each time it rolls over, it's time to pulse the Tach
-      if( tachoSweepAccum >= MS_PER_SEC ) 
-      {  
+      if( tachoSweepAccum >= MS_PER_SEC )
+      {
         tachoOutputFlag = READY;
         tachoSweepAccum -= MS_PER_SEC;
       }
@@ -139,7 +139,7 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
   if(tachoOutputFlag == READY)
   {
     //Check for half speed tacho
-    if( (configPage2.tachoDiv == 0) || (currentStatus.tachoAlt == true) ) 
+    if( (configPage2.tachoDiv == 0) || (currentStatus.tachoAlt == true) )
     { 
       TACHO_PULSE_LOW();
       //ms_counter is cast down to a byte as the tacho duration can only be in the range of 1-6, so no extra resolution above that is required
@@ -151,7 +151,7 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
       //Don't run on this pulse (Half speed tacho)
       tachoOutputFlag = TACHO_INACTIVE;
     }
-    currentStatus.tachoAlt = !currentStatus.tachoAlt; //Flip the alternating value in case half speed tacho is in use. 
+    currentStatus.tachoAlt = !currentStatus.tachoAlt; //Flip the alternating value in case half speed tacho is in use.
   }
   else if(tachoOutputFlag == ACTIVE)
   {
@@ -168,7 +168,7 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
   {
     loop5ms = 0; //Reset counter
     BIT_SET(TIMER_mask, BIT_TIMER_200HZ);
-  }  
+  }
 
   //30Hz loop
   if (loop33ms == 33)
@@ -222,6 +222,8 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
 
     if ( BIT_CHECK(currentStatus.engine, BIT_ENGINE_RUN) ) { runSecsX10++; }
     else { runSecsX10 = 0; }
+
+    fuelPumpControl(); // Control the fuel pump at 10Hz
 
     if ( (currentStatus.injPrimed == false) && (seclx10 == configPage2.primingDelay) && (currentStatus.RPM == 0) ) { beginInjectorPriming(); currentStatus.injPrimed = true; }
     seclx10++;
@@ -322,7 +324,7 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
       //Continental flex sensor fuel temperature can be read with following formula: (Temperature = (41.25 * pulse width(ms)) - 81.25). 1000μs = -40C and 5000μs = 125C
       flexPulseWidth = constrain(flexPulseWidth, 1000UL, 5000UL);
       int32_t tempX100 = (int32_t)rshift<10>(4224UL * flexPulseWidth) - 8125L; //Split up for MISRA compliance
-      currentStatus.fuelTemp = div100((int16_t)tempX100);     
+      currentStatus.fuelTemp = div100((int16_t)tempX100);
     }
   }
 
@@ -332,6 +334,8 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
     //Check for pulsed injector output test
     if( (HWTest_INJ_Pulsed > 0)  )
     {
+       // HRW TEST  setFuelSchedule1(100, primingValue); - change these to trigger an injector pulse based on reqFuel.
+       //Check whether any of the fuel outputs is on
       if(testInjectorPulseCount >= configPage13.hwTestInjDuration)
       {
         if(BIT_CHECK(HWTest_INJ_Pulsed, INJ1_CMD_BIT)) { closeInjector1(); }
@@ -342,12 +346,12 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
         if(BIT_CHECK(HWTest_INJ_Pulsed, INJ6_CMD_BIT)) { closeInjector6(); }
         if(BIT_CHECK(HWTest_INJ_Pulsed, INJ7_CMD_BIT)) { closeInjector7(); }
         if(BIT_CHECK(HWTest_INJ_Pulsed, INJ8_CMD_BIT)) { closeInjector8(); }
-        
+
         testInjectorPulseCount = 0;
       }
       else { testInjectorPulseCount++; }
     }
-    
+
 
     //Check for pulsed ignition output test
     if( (HWTest_IGN_Pulsed > 0) )
@@ -367,7 +371,7 @@ void oneMSInterval(void) //Most ARM chips can simply call a function
       }
       else { testIgnitionPulseCount++; }
     }
-    
+
   }
 
 
