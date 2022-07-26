@@ -157,7 +157,7 @@ void airConControl(void)
       acAfterEngineStartDelay = 0;
       waitedAfterCranking = false;
     }
-    
+
     // --------------------------------------------------------------------
     // Determine the A/C lockouts based on the noted parameters
     // These functions set/clear the globl currentStatus.airConStatus bits.
@@ -165,7 +165,7 @@ void airConControl(void)
     checkAirConCoolantLockout();
     checkAirConTPSLockout();
     checkAirConRPMLockout();
-    
+
     // -----------------------------------------
     // Check the A/C Request Signal (A/C Button)
     // -----------------------------------------
@@ -217,7 +217,7 @@ bool READ_AIRCON_REQUEST(void)
     return false;
   }
   // Read the status of the A/C request pin (A/C button), taking into account the pin's polarity
-  bool acReqPinStatus = ( ((configPage15.airConReqPol)==1) ? 
+  bool acReqPinStatus = ( ((configPage15.airConReqPol)==1) ?
                              !!(*aircon_req_pin_port & aircon_req_pin_mask) :
                              !(*aircon_req_pin_port & aircon_req_pin_mask));
   BIT_WRITE(currentStatus.airConStatus, BIT_AIRCON_REQUEST, acReqPinStatus);
@@ -340,12 +340,12 @@ void fanControl(void)
     int offTemp = onTemp - configPage6.fanHyster;
     bool fanPermit = false;
 
-    
+
     if ( configPage2.fanWhenOff == true) { fanPermit = true; }
     else { fanPermit = BIT_CHECK(currentStatus.engine, BIT_ENGINE_RUN); }
 
     if ( (fanPermit == true) &&
-         ((currentStatus.coolant >= onTemp) || 
+         ((currentStatus.coolant >= onTemp) ||
            ((configPage15.airConTurnsFanOn) == 1 &&
            BIT_CHECK(currentStatus.airConStatus, BIT_AIRCON_TURNING_ON) == true)) )
     {
@@ -445,6 +445,30 @@ void fanControl(void)
   }
 }
 
+void fuelPumpControl()
+{
+   if (BIT_CHECK(currentStatus.testOutputs, 1) == false) // Make sure test outputs is not on, otherwise fuel pump request is controlled by that function.
+   {
+     if (currentStatus.hasSync == true) // Engine turning with sync
+     {
+       currentStatus.fuelPumpOn = true;
+       fpPrimed = true;
+       fpOffDelay = 10; //1 sec
+     }
+     else if(fpPrimed == false) // Engine not running and not primed
+     {
+       if( (currentStatus.secl - fpPrimeTime) >= configPage2.fpPrime) { fpPrimed = true; } //Mark the priming as being completed
+       else { currentStatus.fuelPumpOn = true; } // otherwise turn on the fuel pump
+       fpOffDelay = 0;
+     }
+     else if(fpOffDelay == 0) { currentStatus.fuelPumpOn = false; } // not running and prime completed and off delay done, turn off pump.
+     else { fpOffDelay = fpOffDelay - 1; } // count down off delay.
+   }
+  // Single place to align fuel pump status with actual fuel pump state
+  if (currentStatus.fuelPumpOn == true) { FUEL_PUMP_ON(); }
+  else { FUEL_PUMP_OFF(); }
+}
+
 void initialiseAuxPWM(void)
 {
   boost_pin_port = portOutputRegister(digitalPinToPort(pinBoost));
@@ -511,7 +535,7 @@ void initialiseAuxPWM(void)
     vvtTimeHold = false;
     if (currentStatus.coolant >= (int)(configPage4.vvtMinClt - CALIBRATION_TEMPERATURE_OFFSET)) { vvtIsHot = true; } //Checks to see if coolant's already at operating temperature
   }
-  
+
   if( (configPage6.vvtEnabled == 0) && (configPage10.wmiEnabled >= 1) )
   {
     // config wmi pwm output to use vvt output
@@ -714,7 +738,7 @@ void boostControl(void)
         {
           currentStatus.flexBoostCorrection = 0;
         }
-      } 
+      }
 
       if(((configPage15.boostControlEnable == EN_BOOST_CONTROL_BARO) && (currentStatus.MAP >= currentStatus.baro)) || ((configPage15.boostControlEnable == EN_BOOST_CONTROL_FIXED) && (currentStatus.MAP >= configPage15.boostControlEnableThreshold))) //Only enables boost control above baro pressure or above user defined threshold (User defined level is usually set to boost with wastegate actuator only boost level)
       {
@@ -1033,7 +1057,7 @@ void wmiControl(void)
 {
   int wmiPW = 0;
   
-  // wmi can only work when vvt2 is disabled 
+  // wmi can only work when vvt2 is disabled
   if( (configPage10.vvt2Enabled == 0) && (configPage10.wmiEnabled >= 1) )
   {
     if( WMI_TANK_IS_EMPTY() )
@@ -1057,7 +1081,7 @@ void wmiControl(void)
           break;
         case WMI_MODE_CLOSEDLOOP:
           // Mapped closed loop - Output PWM follows injector duty cycle with 2D correction map applied (RPM vs MAP). Cell value contains correction value% [nom 100%] 
-          wmiPW = max(0, ((int)currentStatus.PW1 + configPage10.wmiOffset)) * get3DTableValue(&wmiTable, currentStatus.MAP, currentStatus.RPM) / 200;
+          wmiPW = max(0, ((int)currentStatus.PW1 + configPage10.wmiOffset)) * get3DTableValue(&wmiTable, currentStatus.MAP, currentStatus.RPM) / 100;
           break;
         default:
           // Wrong mode
