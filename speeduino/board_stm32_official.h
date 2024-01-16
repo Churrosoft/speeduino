@@ -100,7 +100,7 @@ inline uint32_t  digitalPinToInterrupt(uint32_t Interrupt_pin) { return Interrup
 
 //When building for Black board Serial1 is instantiated,building generic STM32F4x7 has serial2 and serial 1 must be done here
 #if SERIAL_UART_INSTANCE==2
-HardwareSerial Serial1(PA10, PA9);
+// HardwareSerial Serial1(PA10, PA9);
 #endif
 
 extern STM32RTC& rtc;
@@ -112,7 +112,7 @@ void jumpToBootloader();
 
 #if defined(ARDUINO_BLUEPILL_F103C8) || defined(ARDUINO_BLUEPILL_F103CB) \
  || defined(ARDUINO_BLACKPILL_F401CC) || defined(ARDUINO_BLACKPILL_F411CE)
-  #define pinIsReserved(pin)  ( ((pin) == PA11) || ((pin) == PA12) || ((pin) == PC14) || ((pin) == PC15) )
+  #define pinIsReserved(pin)  ( ((pin) == PA_11) || ((pin) == PA_12) || ((pin) == PC14) || ((pin) == PC15) )
 
   #ifndef PB11 //Hack for F4 BlackPills
     #define PB11 PB10
@@ -128,9 +128,9 @@ void jumpToBootloader();
   #endif
 #else
   #ifdef USE_SPI_EEPROM
-    #define pinIsReserved(pin)  ( ((pin) == PA11) || ((pin) == PA12) || ((pin) == PB3) || ((pin) == PB4) || ((pin) == PB5) || ((pin) == USE_SPI_EEPROM) ) //Forbidden pins like USB
+    #define pinIsReserved(pin)  ( ((pin) == PA_11) || ((pin) == PA_12) || ((pin) == PB3) || ((pin) == PB4) || ((pin) == PB5) || ((pin) == USE_SPI_EEPROM) ) //Forbidden pins like USB
   #else
-    #define pinIsReserved(pin)  ( ((pin) == PA11) || ((pin) == PA12) || ((pin) == PB3) || ((pin) == PB4) || ((pin) == PB5) || ((pin) == PB0) ) //Forbidden pins like USB
+    #define pinIsReserved(pin)  ( ((pin) == PA_11) || ((pin) == PA_12) || ((pin) == PB3) || ((pin) == PB4) || ((pin) == PB5) || ((pin) == PB0) ) //Forbidden pins like USB
   #endif
 #endif
 

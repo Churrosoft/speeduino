@@ -1,0 +1,7 @@
+target extended-remote /dev/ttyACM0
+monitor tpwr enable
+monitor connect_rst enable
+monitor swdp_scan
+attach 1
+# monitor tpwr enable
+# monitor connect_rst enable
