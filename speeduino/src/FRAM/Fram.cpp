@@ -112,7 +112,7 @@ void FramClass::enableWrite (uint8_t state)
 
 void FramClass::setClock(uint32_t clockSpeed) {
   spiSpeed = 1000000 / (clockSpeed * 2);
-  #ifdef SPI_HAS_TRANSACTION
+  #if defined(SPI_HAS_TRANSACTION) and !defined(STM32F4)
   FRAMSettings = SPISettings(clockSpeed, MSBFIRST, SPI_MODE0);
   #if defined(ARDUINO_ARCH_STM32)
   spi->beginTransaction(csPin, FRAMSettings);
@@ -321,7 +321,8 @@ uint8_t FramClass::spiSend(uint8_t data)
     fastWrite(clkPort, clkMask, LOW);
   }
 #if defined(ARDUINO_ARCH_STM32)
-  else { reply = spi->transfer(csPin, data, SPI_CONTINUE); }
+        #warning FIXME temporarily disabled because fram is not used
+  //else { reply = spi->transfer(csPin, data, SPI_CONTINUE); }
 #else
   else { reply = spi->transfer(data); }
 #endif
@@ -346,7 +347,8 @@ uint16_t FramClass::spiSend16(uint16_t data)
     fastWrite(clkPort, clkMask, LOW);
   }
 #if defined(ARDUINO_ARCH_STM32)
-  else { reply = spi->transfer16(csPin, data, SPI_CONTINUE); }
+        #warning FIXME temporarily disabled because fram is not used
+  //else { reply = spi->transfer16(csPin, data, SPI_CONTINUE); }
 #else
   else { reply = spi->transfer16(data); }
 #endif
