@@ -74,7 +74,7 @@ void STM32_CAN::begin( bool retransmission ) {
       __HAL_RCC_GPIOA_CLK_ENABLE();
       GPIO_InitStruct.Pull = GPIO_NOPULL;
       #if defined(__HAL_RCC_AFIO_CLK_ENABLE)
-      __HAL_AFIO_REMAP_CAN1_1(); // To use PA11/12 pins for CAN1.
+      __HAL_AFIO_REMAP_CAN1_1(); // To use PA_11/12 pins for CAN1.
       __HAL_RCC_AFIO_CLK_ENABLE();
       GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
       GPIO_InitStruct.Pin = GPIO_PIN_11;
