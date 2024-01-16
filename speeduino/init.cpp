@@ -300,7 +300,7 @@ void initialiseAll(void)
       //First time running on this board
       resetConfigPages();
       configPage4.triggerTeeth = 4; //Avoiddiv by 0 when start decoders
-      setPinMapping(3); //Force board to v0.4
+      setPinMapping(70); //Force board to v0.4
     }
     else { setPinMapping(configPage2.pinMapping); }
 
