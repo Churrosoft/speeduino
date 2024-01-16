@@ -112,7 +112,7 @@ void FramClass::enableWrite (uint8_t state)
 
 void FramClass::setClock(uint32_t clockSpeed) {
   spiSpeed = 1000000 / (clockSpeed * 2);
-  #ifdef SPI_HAS_TRANSACTION
+  #if defined(SPI_HAS_TRANSACTION) and !defined(STM32F4)
   FRAMSettings = SPISettings(clockSpeed, MSBFIRST, SPI_MODE0);
   spi->beginTransaction(FRAMSettings);
   #endif
