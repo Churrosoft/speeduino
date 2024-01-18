@@ -49,6 +49,11 @@
  * - Read CLT and TPS sensors to have cranking pulsewidths computed correctly
  * - Mark Initialisation completed (this flag-marking is used in code to prevent after-init changes)
  */
+
+#undef LED_BUILTIN
+#undef EEPROM_RESET_PIN
+#define LED_BUILTIN PC13
+
 void initialiseAll(void)
 {   
     currentStatus.fpPrimed = false;
@@ -2730,7 +2735,7 @@ void setPinMapping(byte boardID)
            pinBat = PA5;  //ADC12
           pinBoost = PA6; //
           pinIdle1 = PA7; //
-          pinSPIFlash_CS = PE14;
+          //pinSPIFlash_CS = PE14;
         pinMC33810_1_CS = PB11;
         
          pinTachOut = PE11; //
