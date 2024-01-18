@@ -42,8 +42,8 @@
 #define TIMER_RESOLUTION 4
 
 //Select one for EEPROM,the default is EEPROM emulation on internal flash.
-//#define SRAM_AS_EEPROM /*Use 4K battery backed SRAM, requires a 3V continuous source (like battery) connected to Vbat pin */
-#define USE_SPI_EEPROM PB0 /*Use M25Qxx SPI flash on BlackF407VE*/
+#define SRAM_AS_EEPROM /*Use 4K battery backed SRAM, requires a 3V continuous source (like battery) connected to Vbat pin */
+//#define USE_SPI_EEPROM PB0 /*Use M25Qxx SPI flash on BlackF407VE*/
 //#define FRAM_AS_EEPROM /*Use FRAM like FM25xxx, MB85RSxxx or any SPI compatible */
 
 #ifndef word
@@ -100,7 +100,7 @@ inline uint32_t  digitalPinToInterrupt(uint32_t Interrupt_pin) { return Interrup
 
 //When building for Black board Serial1 is instantiated,building generic STM32F4x7 has serial2 and serial 1 must be done here
 #if SERIAL_UART_INSTANCE==2
-// HardwareSerial Serial1(PA10, PA9);
+ HardwareSerial Serial1(PB7, PB6);
 #endif
 
 extern STM32RTC& rtc;
