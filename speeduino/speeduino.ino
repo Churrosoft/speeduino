@@ -182,7 +182,8 @@ void loop(void)
       //This is a safety check. If for some reason the interrupts have got screwed up (Leading to 0rpm), this resets them.
       //It can possibly be run much less frequently.
       //This should only be run if the high speed logger are off because it will change the trigger interrupts back to defaults rather than the logger versions
-      if( (currentStatus.toothLogEnabled == false) && (currentStatus.compositeTriggerUsed == 0) ) { initialiseTriggers(); }
+      // FIXME: deshabilitado porque en este caso entrariamos a los triggers con un estado corrupto de configuracion (ya que no se esta leyendo)
+      // if( (currentStatus.toothLogEnabled == false) && (currentStatus.compositeTriggerUsed == 0) ) { initialiseTriggers(); }
 
       VVT1_PIN_LOW();
       VVT2_PIN_LOW();

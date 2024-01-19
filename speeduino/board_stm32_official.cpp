@@ -30,7 +30,7 @@ Default CAN3 pins are PA8 & PA15. Alternative (ALT) pins are PB3 & PB4.
     #if defined(STM32F407xx)
       SPIClass SPI_for_flash(PB15, PB14, PB10); //SPI1_MOSI, SPI1_MISO, SPI1_SCK
     #else //Blue/Black Pills
-      SPIClass SPI_for_flash(PB15, PB14, PB13);
+      SPIClass SPI_for_flash(PB15, PB14, PB10);
     #endif
  
     //winbond W25Q16 SPI flash EEPROM emulation
@@ -288,7 +288,6 @@ STM32RTC& rtc = STM32RTC::getInstance();
     Timer4.attachInterrupt(4, ignitionSchedule8Interrupt);
     #endif
 
-
   }
 
   uint16_t freeRam()
@@ -348,50 +347,50 @@ STM32RTC& rtc = STM32RTC::getInstance();
 
 
 
-// /**
-//   * @brief System Clock Configuration
-//   * @retval None
-//   */
-// void SystemClock_Config(void)
-// {
-//   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-//   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-//   /** Configure the main internal regulator output voltage
-//   */
-//   __HAL_RCC_PWR_CLK_ENABLE();
-//   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-//   /** Initializes the RCC Oscillators according to the specified parameters
-//   * in the RCC_OscInitTypeDef structure.
-//   */
-//   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-//   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-//   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-//   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-//   RCC_OscInitStruct.PLL.PLLM = 15;
-//   RCC_OscInitStruct.PLL.PLLN = 144;
-//   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-//   RCC_OscInitStruct.PLL.PLLQ = 5;
-//   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-//   {
-//     Error_Handler();
-//   }
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 15;
+  RCC_OscInitStruct.PLL.PLLN = 144;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 5;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-//   /** Initializes the CPU, AHB and APB buses clocks
-//   */
-//   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-//                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-//   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-//   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-//   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-//   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-//   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
-//   {
-//     Error_Handler();
-//   }
-// }
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
 
   /*
   ***********************************************************************************************************
