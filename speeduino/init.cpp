@@ -105,8 +105,8 @@ void initialiseAll(void)
   
     // Unit tests should be independent of any stored configuration on the board!
 #if !defined(UNIT_TEST)
-    loadConfig();
-    doUpdates(); //Check if any data items need updating (Occurs with firmware updates)
+      // loadConfig();
+     // doUpdates(); //Check if any data items need updating (Occurs with firmware updates)
 #endif
 
 
@@ -432,8 +432,8 @@ void initialiseAll(void)
     instanteneousMAPReading();
     readBaro();
     
-    noInterrupts();
-    initialiseTriggers();
+    // noInterrupts();
+    // initialiseTriggers();
 
     //The secondary input can be used for VSS if nothing else requires it. Allows for the standard VR conditioner to be used for VSS. This MUST be run after the initialiseTriggers() function
     if( VSS_USES_RPM2() ) { attachInterrupt(digitalPinToInterrupt(pinVSS), vssPulse, RISING); } //Secondary trigger input can safely be used for VSS
@@ -2752,7 +2752,9 @@ void setPinMapping(byte boardID)
         pinIdle2 = PE5; //
         
         pinTrigger = PC6; //
-        pinTrigger2 = PC7; //
+        pinTrigger2 = PC7; //PNUM_NOT_DEFINED
+        pinTrigger3 = PC8;
+        pinFlex = PC9;
         pinFuelPump = PE2; //ONBOARD KEY1
         pinStepperStep = PE7; //
         pinFan = PE2; //
