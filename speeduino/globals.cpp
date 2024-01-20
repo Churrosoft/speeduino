@@ -236,6 +236,14 @@ byte pinAirConComp;     // Air conditioning compressor output (See: auxiliaries.
 byte pinAirConFan;    // Stand-alone air conditioning fan output (See: auxiliaries.ino)
 byte pinAirConRequest;  // Air conditioning request input (See: auxiliaries.ino)
 
+//uEFI v3 and prior uses a mux for select one of the 8 analog channels
+#ifdef CHURROSOFT_UEFI_V3
+byte pinMuxA;
+byte pinMuxB;
+byte pinMuxC;
+byte pinMuxOut;
+#endif
+
 struct statuses currentStatus; /**< The master global "live" status struct. Contains all values that are updated frequently and used across modules */
 struct config2 configPage2;
 struct config4 configPage4;

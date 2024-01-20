@@ -414,6 +414,21 @@ This is so we can use an unsigned byte (0-255) to represent temperature ranges f
 #define LOGGER_FILENAMING_DATETIME      1
 #define LOGGER_FILENAMING_SEQENTIAL     2
 
+#ifdef CHURROSOFT_UEFI_V3
+
+#define MUX_TPS_CHANNEL 0
+#define MUX_MAP_CHANNEL 1
+#define MUX_IAT_CHANNEL 2
+#define MUX_CLT_CHANNEL 3
+// channel 4-5 free
+#define MUX_O2_CHANNEL 6
+#define MUX_BAT_CHANNEL 7
+
+#define GET_MUX_A(MUX_CHANNEL) (MUX_CHANNEL >> 0)  & 0x01
+#define GET_MUX_B(MUX_CHANNEL) (MUX_CHANNEL >> 1)  & 0x01
+#define GET_MUX_C(MUX_CHANNEL) (MUX_CHANNEL >> 2)  & 0x01
+
+#endif
 extern const char TSfirmwareVersion[] PROGMEM;
 
 extern const byte data_structure_version; //This identifies the data structure when reading / writing. Now in use: CURRENT_DATA_VERSION (migration on-the fly) ?
@@ -1539,6 +1554,14 @@ extern byte pinSDEnable; //Input for manually enabling SD logging
 extern byte pinAirConComp;    // Air conditioning compressor output
 extern byte pinAirConFan;    // Stand-alone air conditioning fan output
 extern byte pinAirConRequest; // Air conditioning request input
+
+//uEFI v3 and prior uses a mux for select one of the 8 analog channels
+#ifdef CHURROSOFT_UEFI_V3
+extern byte pinMuxA;
+extern byte pinMuxB;
+extern byte pinMuxC;
+extern byte pinMuxOut;
+#endif
 
 /* global variables */ // from speeduino.ino
 //#ifndef UNIT_TEST

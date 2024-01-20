@@ -77,6 +77,10 @@ HardwareTimer Timer11(TIM7);
 #endif
 #endif
 
+#ifdef CHURROSOFT_UEFI_V3
+#include "globals.h"
+#endif
+
 #ifdef RTC_ENABLED
 STM32RTC& rtc = STM32RTC::getInstance();
 #endif
@@ -288,6 +292,16 @@ STM32RTC& rtc = STM32RTC::getInstance();
     Timer4.attachInterrupt(4, ignitionSchedule8Interrupt);
     #endif
 
+    #ifdef CHURROSOFT_UEFI_V3
+    //TODO: move to init.cpp
+      pinMuxA = PD2;
+      pinMuxB = PD3;
+      pinMuxC = PD4;
+      pinMuxOut = PA0;
+      pinMode(pinMuxA, OUTPUT);
+      pinMode(pinMuxB, OUTPUT);
+      pinMode(pinMuxC, OUTPUT);
+    #endif
   }
 
   uint16_t freeRam()
