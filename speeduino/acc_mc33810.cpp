@@ -25,6 +25,11 @@ volatile PINMASK_TYPE mc33810_1_pin_mask;
 volatile PORT_TYPE *mc33810_2_pin_port;
 volatile PINMASK_TYPE mc33810_2_pin_mask;
 
+// All Churrosoft OpenEFI/uEFI boards uses SPI2 for the PMIC / Flash
+#if defined(CHURROSOFT_UEFI_V3) || defined(CHURROSOFT_UEFI_V6) || defined(CHURROSOFT_OPENEFI_V4)
+    SPIClass SPI_FOR_PMIC(PB15, PB14, PB10);
+#endif
+
 void initMC33810(void)
 {
     //Set pin port/masks
@@ -42,9 +47,8 @@ void initMC33810(void)
     pinMode(pinMC33810_1_CS, OUTPUT);
     pinMode(pinMC33810_2_CS, OUTPUT);
 
-    SPI.begin();
-    //These are the SPI settings per the datasheet
-	  SPI.beginTransaction(SPISettings(6000000, MSBFIRST, SPI_MODE0)); 
+    PMIC_SPI.begin();
+	PMIC_SPI.beginTransaction(SPISettings(6000000, MSBFIRST, SPI_MODE0)); 
 
     //Set the ignition outputs to GPGD mode
     /*
@@ -56,11 +60,11 @@ void initMC33810(void)
     uint16_t cmd = 0b0001111100000000;
     //IC1
     MC33810_1_ACTIVE();
-    SPI.transfer16(cmd);
+    PMIC_SPI.transfer16(cmd);
     MC33810_1_INACTIVE();
     //IC2
     MC33810_2_ACTIVE();
-    SPI.transfer16(cmd);
+    PMIC_SPI.transfer16(cmd);
     MC33810_2_INACTIVE();
     
 }
