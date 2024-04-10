@@ -233,8 +233,14 @@ void instanteneousMAPReading(void)
   #if defined(ANALOG_ISR_MAP)
     tempReading = AnChannel[pinMAP-A0];
   #else
+    #ifdef CHURROSOFT_UEFI_V3
+      digitalWrite(pinMuxA, GET_MUX_A(MUX_MAP_CHANNEL));
+      digitalWrite(pinMuxB, GET_MUX_B(MUX_MAP_CHANNEL));
+      digitalWrite(pinMuxC, GET_MUX_C(MUX_MAP_CHANNEL));
+    #endif
     tempReading = analogRead(pinMAP);
     tempReading = analogRead(pinMAP);
+  
   #endif
   //Error checking
   if( (tempReading >= VALID_MAP_MAX) || (tempReading <= VALID_MAP_MIN) ) { mapErrorCount += 1; }
@@ -287,12 +293,17 @@ void readMAP(void)
       {
         if( (MAPcurRev == currentStatus.startRevolutions) || ( (MAPcurRev+1) == currentStatus.startRevolutions) ) //2 revolutions are looked at for 4 stroke. 2 stroke not currently catered for.
         {
-          #if defined(ANALOG_ISR_MAP)
-            tempReading = AnChannel[pinMAP-A0];
-          #else
-            tempReading = analogRead(pinMAP);
-            tempReading = analogRead(pinMAP);
-          #endif
+            #if defined(ANALOG_ISR_MAP)
+              tempReading = AnChannel[pinMAP-A0];
+            #else
+            #ifdef CHURROSOFT_UEFI_V3
+              digitalWrite(pinMuxA, GET_MUX_A(MUX_MAP_CHANNEL));
+              digitalWrite(pinMuxB, GET_MUX_B(MUX_MAP_CHANNEL));
+              digitalWrite(pinMuxC, GET_MUX_C(MUX_MAP_CHANNEL));
+            #endif
+              tempReading = analogRead(pinMAP);
+              tempReading = analogRead(pinMAP);
+            #endif
 
           //Error check
           if( (tempReading < VALID_MAP_MAX) && (tempReading > VALID_MAP_MIN) )
@@ -371,12 +382,17 @@ void readMAP(void)
       {
         if( (MAPcurRev == currentStatus.startRevolutions) || ((MAPcurRev+1) == currentStatus.startRevolutions) ) //2 revolutions are looked at for 4 stroke. 2 stroke not currently catered for.
         {
-          #if defined(ANALOG_ISR_MAP)
-            tempReading = AnChannel[pinMAP-A0];
-          #else
-            tempReading = analogRead(pinMAP);
-            tempReading = analogRead(pinMAP);
-          #endif
+            #if defined(ANALOG_ISR_MAP)
+              tempReading = AnChannel[pinMAP-A0];
+            #else
+            #ifdef CHURROSOFT_UEFI_V3
+              digitalWrite(pinMuxA, GET_MUX_A(MUX_MAP_CHANNEL));
+              digitalWrite(pinMuxB, GET_MUX_B(MUX_MAP_CHANNEL));
+              digitalWrite(pinMuxC, GET_MUX_C(MUX_MAP_CHANNEL));
+            #endif
+              tempReading = analogRead(pinMAP);
+              tempReading = analogRead(pinMAP);
+            #endif
           //Error check
           if( (tempReading < VALID_MAP_MAX) && (tempReading > VALID_MAP_MIN) )
           {
@@ -414,12 +430,17 @@ void readMAP(void)
       {
         if( (MAPcurRev == ignitionCount) ) //Watch for a change in the ignition counter to determine whether we're still on the same event
         {
-          #if defined(ANALOG_ISR_MAP)
-            tempReading = AnChannel[pinMAP-A0];
-          #else
-            tempReading = analogRead(pinMAP);
-            tempReading = analogRead(pinMAP);
-          #endif
+            #if defined(ANALOG_ISR_MAP)
+              tempReading = AnChannel[pinMAP-A0];
+            #else
+            #ifdef CHURROSOFT_UEFI_V3
+              digitalWrite(pinMuxA, GET_MUX_A(MUX_MAP_CHANNEL));
+              digitalWrite(pinMuxB, GET_MUX_B(MUX_MAP_CHANNEL));
+              digitalWrite(pinMuxC, GET_MUX_C(MUX_MAP_CHANNEL));
+            #endif
+              tempReading = analogRead(pinMAP);
+              tempReading = analogRead(pinMAP);
+            #endif
 
           //Error check
           if( (tempReading < VALID_MAP_MAX) && (tempReading > VALID_MAP_MIN) )
@@ -473,8 +494,16 @@ void readTPS(bool useFilter)
   #if defined(ANALOG_ISR)
     byte tempTPS = fastMap1023toX(AnChannel[pinTPS-A0], 255); //Get the current raw TPS ADC value and map it into a byte
   #else
+
+  #ifdef CHURROSOFT_UEFI_V3
+    digitalWrite(pinMuxA, GET_MUX_A(MUX_TPS_CHANNEL));
+    digitalWrite(pinMuxB, GET_MUX_B(MUX_TPS_CHANNEL));
+    digitalWrite(pinMuxC, GET_MUX_C(MUX_TPS_CHANNEL));
+    byte tempTPS = fastMap1023toX(analogRead(pinMuxOut), 255); //Get the current raw TPS ADC value and map it into a byte
+  #else
     analogRead(pinTPS);
     byte tempTPS = fastMap1023toX(analogRead(pinTPS), 255); //Get the current raw TPS ADC value and map it into a byte
+    #endif
   #endif
   //The use of the filter can be overridden if required. This is used on startup to disable priming pulse if flood clear is wanted
   if(useFilter == true) { currentStatus.tpsADC = ADC_FILTER(tempTPS, configPage4.ADCFILTER_TPS, currentStatus.tpsADC); }
@@ -518,6 +547,11 @@ void readCLT(bool useFilter)
   #if defined(ANALOG_ISR)
     tempReading = AnChannel[pinCLT-A0]; //Get the current raw CLT value
   #else
+     #ifdef CHURROSOFT_UEFI_V3
+      digitalWrite(pinMuxA, GET_MUX_A(MUX_CLT_CHANNEL));
+      digitalWrite(pinMuxB, GET_MUX_B(MUX_CLT_CHANNEL));
+      digitalWrite(pinMuxC, GET_MUX_C(MUX_CLT_CHANNEL));
+    #endif
     tempReading = analogRead(pinCLT);
     tempReading = analogRead(pinCLT);
     //tempReading = fastMap1023toX(analogRead(pinCLT), 511); //Get the current raw CLT value
@@ -532,9 +566,15 @@ void readCLT(bool useFilter)
 void readIAT(void)
 {
   unsigned int tempReading;
+  
   #if defined(ANALOG_ISR)
     tempReading = AnChannel[pinIAT-A0]; //Get the current raw IAT value
   #else
+   #ifdef CHURROSOFT_UEFI_V3
+      digitalWrite(pinMuxA, GET_MUX_A(MUX_IAT_CHANNEL));
+      digitalWrite(pinMuxB, GET_MUX_B(MUX_IAT_CHANNEL));
+      digitalWrite(pinMuxC, GET_MUX_C(MUX_IAT_CHANNEL));
+    #endif
     tempReading = analogRead(pinIAT);
     tempReading = analogRead(pinIAT);
   #endif
