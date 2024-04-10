@@ -77,11 +77,11 @@ void initMC33810(void)
     cmd = 0b0010100011110000;
     //IC1
     MC33810_1_ACTIVE();
-    SPI.transfer16(cmd);
+    PMIC_SPI.transfer16(cmd);
     MC33810_1_INACTIVE();
     //IC2
     MC33810_2_ACTIVE();
-    SPI.transfer16(cmd);
+    PMIC_SPI.transfer16(cmd);
     MC33810_2_INACTIVE();
     
 }
