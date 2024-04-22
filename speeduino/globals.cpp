@@ -227,7 +227,9 @@ byte pinWMIEmpty; // Water tank empty sensor
 byte pinWMIIndicator; // No water indicator bulb
 byte pinWMIEnabled; // ON-OFF output to relay/pump/solenoid 
 byte pinMC33810_1_CS;
+byte pinMC33810_1_ENABLE;
 byte pinMC33810_2_CS;
+byte pinMC33810_2_ENABLE;
 byte pinSDEnable;
 #ifdef USE_SPI_EEPROM
   byte pinSPIFlash_CS;
