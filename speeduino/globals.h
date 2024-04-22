@@ -1530,7 +1530,9 @@ extern byte pinWMIEmpty; // Water tank empty sensor
 extern byte pinWMIIndicator; // No water indicator bulb
 extern byte pinWMIEnabled; // ON-OFF output to relay/pump/solenoid
 extern byte pinMC33810_1_CS;
+extern byte pinMC33810_1_ENABLE;
 extern byte pinMC33810_2_CS;
+extern byte pinMC33810_2_ENABLE;
 extern byte pinSDEnable; //Input for manually enabling SD logging
 #ifdef USE_SPI_EEPROM
   extern byte pinSPIFlash_CS;

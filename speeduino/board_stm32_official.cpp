@@ -287,7 +287,6 @@ STM32RTC& rtc = STM32RTC::getInstance();
     #endif
     Timer4.attachInterrupt(4, ignitionSchedule8Interrupt);
     #endif
-
   }
 
   uint16_t freeRam()

@@ -297,17 +297,15 @@ void initialiseAll(void)
     //Setup the calibration tables
     loadCalibration();
 
-    
-
     //Set the pin mappings
     if((configPage2.pinMapping == 255) || (configPage2.pinMapping == 0)) //255 = EEPROM value in a blank AVR; 0 = EEPROM value in new FRAM
     {
       //First time running on this board
       resetConfigPages();
       configPage4.triggerTeeth = 4; //Avoiddiv by 0 when start decoders
-      setPinMapping(70); //Force board to v0.4
+      setPinMapping(71); //Force board to v0.4
     }
-    else { setPinMapping(70); }
+    else { setPinMapping(71); }
 
     #if defined(NATIVE_CAN_AVAILABLE)
       initCAN();
@@ -1378,7 +1376,7 @@ void setPinMapping(byte boardID)
   {
       // Pin definitions for experimental board uEFI v3.4
       // https://github.com/Churrosoft/OpenEFI-PCB/tree/main/uEFI_rev3
-      case 1:
+      case 70:
         pinInjector1 = PNUM_NOT_DEFINED; //Output pin injector 1 is on
         pinInjector2 = PNUM_NOT_DEFINED; //Output pin injector 2 is on
         pinInjector3 = PNUM_NOT_DEFINED; //Output pin injector 3 is on
@@ -1421,6 +1419,53 @@ void setPinMapping(byte boardID)
         pinStepperDir = 16; //Direction pin  for DRV8825 driver
         pinStepperStep = 17; //Step pin for DRV8825 driver
         pinStepperEnable = 24; //Enable pin for DRV8825
+
+        // Pin definitions for experimental board uEFI v6
+        // https://github.com/Churrosoft/uEFI-v6.x
+        case 71:
+          pinInjector1 = PNUM_NOT_DEFINED; //Output pin injector 1 is on
+          pinInjector2 = PNUM_NOT_DEFINED; //Output pin injector 2 is on
+          pinInjector3 = PNUM_NOT_DEFINED; //Output pin injector 3 is on
+          pinInjector4 = PNUM_NOT_DEFINED; //Output pin injector 4 is on
+
+          pinCoil1 = PNUM_NOT_DEFINED; //Pin for coil 1
+          pinCoil2 = PNUM_NOT_DEFINED; //Pin for coil 2
+          pinCoil3 = PNUM_NOT_DEFINED; //Pin for coil 3
+          pinCoil4 = PNUM_NOT_DEFINED; //Pin for coil 4
+
+          injectorOutputControl = OUTPUT_CONTROL_MC33810;
+          ignitionOutputControl = OUTPUT_CONTROL_MC33810;
+          pinMC33810_1_CS = PB11;
+          pinMC33810_1_ENABLE = PB12;
+
+          pinTrigger = PC6; // CKP
+          pinTrigger2 = PC7; // CMP
+
+          // Sensors:
+          pinIAT = PA0; //ADC123
+          pinTPS = PA1; //ADC123
+          pinMAP = PA2; //ADC123
+          pinCLT = PA3; //ADC123
+          pinO2 = PA4; //ADC12
+          pinBat = PA5;  //ADC12
+          pinFuelPressure = PA6;
+          pinOilPressure = PA7;
+          pinFlex = PNUM_NOT_DEFINED; // Flex sensor (Must be external interrupt enabled)
+          pinBaro = PNUM_NOT_DEFINED; // SPI BARO on OpenEFI v4
+
+
+          // Outputs:
+          pinTachOut = PE11; //
+          pinBoost = PA6; //
+          pinIdle1 = PA7; //
+          pinVVT_1 = PE3; //Default VVT output
+          pinFuelPump = PE1; //Fuel pump output  (Goes to ULN2803)
+          pinFan = PE0; //Pin for the fan output (Goes to ULN2803)
+          pinLaunch = PE13; //Can be overwritten below
+
+          pinStepperDir = PE8; //Direction pin  for DRV8825 driver
+          pinStepperStep = PE7; //Step pin for DRV8825 driver
+          pinStepperEnable = PE10; //Enable pin for DRV8825
   }
 
   //Setup any devices that are using selectable pins
@@ -1571,6 +1616,8 @@ void setPinMapping(byte boardID)
   if( (ignitionOutputControl == OUTPUT_CONTROL_MC33810) || (injectorOutputControl == OUTPUT_CONTROL_MC33810) )
   {
     initMC33810();
+    pinMode(pinMC33810_1_ENABLE, OUTPUT);
+    digitalWrite(pinMC33810_1_ENABLE, true);
     if( (LED_BUILTIN != SCK) && (LED_BUILTIN != MOSI) && (LED_BUILTIN != MISO) ) pinMode(LED_BUILTIN, OUTPUT); //This is required on as the LED pin can otherwise be reset to an input
   }
 
