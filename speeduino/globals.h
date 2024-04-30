@@ -80,7 +80,7 @@
 
   #define BOARD_MAX_ADC_PINS  NUM_ANALOG_INPUTS-1 //Number of analog pins from core.
   #if defined(STM32F407xx) //F407 can do 8x8 STM32F401/STM32F411 don't
-    #if defined(Churrosoft_uEFI)
+    #if defined(CHURROSOFT_UEFI_V6)
         #define INJ_CHANNELS 4
         #define IGN_CHANNELS 4
     #else

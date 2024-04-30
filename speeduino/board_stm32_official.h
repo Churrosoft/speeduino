@@ -42,8 +42,8 @@
 #define TIMER_RESOLUTION 4
 
 //Select one for EEPROM,the default is EEPROM emulation on internal flash.
-// #define SRAM_AS_EEPROM /*Use 4K battery backed SRAM, requires a 3V continuous source (like battery) connected to Vbat pin */
-#define USE_SPI_EEPROM PE13 /*Use M25Qxx SPI flash on BlackF407VE*/
+//#define SRAM_AS_EEPROM /*Use 4K battery backed SRAM, requires a 3V continuous source (like battery) connected to Vbat pin */
+#define USE_SPI_EEPROM PB13 /*Use M25Qxx SPI flash on BlackF407VE*/
 // #define FRAM_AS_EEPROM /*Use FRAM like FM25xxx, MB85RSxxx or any SPI compatible */
 
 #ifndef word
@@ -79,9 +79,11 @@ extern "C" char* sbrk(int incr); //Used to freeRam
 inline uint32_t  digitalPinToInterrupt(uint32_t Interrupt_pin) { return Interrupt_pin; } //This isn't included in the stm32duino libs (yet)
 #endif
 
-#if defined(USER_BTN) 
-  #define EEPROM_RESET_PIN USER_BTN //onboard key0 for black STM32F407 boards and blackpills, keep pressed during boot to reset eeprom
-#endif
+//#if defined(USER_BTN)
+//  #define EEPROM_RESET_PIN USER_BTN //onboard key0 for black STM32F407 boards and blackpills, keep pressed during boot to reset eeprom
+//#endif
+
+#define EEPROM_RESET_PIN PB0
 
 #if defined(STM32F407xx)
   //Comment out this to disable SD logging for STM32 if needed. Currently SD logging for STM32 is experimental feature for F407.
@@ -137,7 +139,7 @@ void jumpToBootloader();
 #define PWM_FAN_AVAILABLE
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN PA7
+  #define LED_BUILTIN PC2
 #endif
 
 /*

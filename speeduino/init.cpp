@@ -50,12 +50,9 @@
  * - Mark Initialisation completed (this flag-marking is used in code to prevent after-init changes)
  */
 
-#undef LED_BUILTIN
 #undef EEPROM_RESET_PIN
-#define LED_BUILTIN PC13
-
 void initialiseAll(void)
-{   
+{
     currentStatus.fpPrimed = false;
     currentStatus.injPrimed = false;
 
@@ -1423,17 +1420,17 @@ void setPinMapping(byte boardID)
         // Pin definitions for experimental board uEFI v6
         // https://github.com/Churrosoft/uEFI-v6.x
         case 71:
-          pinInjector1 = PNUM_NOT_DEFINED; //Output pin injector 1 is on
-          pinInjector2 = PNUM_NOT_DEFINED; //Output pin injector 2 is on
-          pinInjector3 = PNUM_NOT_DEFINED; //Output pin injector 3 is on
-          pinInjector4 = PNUM_NOT_DEFINED; //Output pin injector 4 is on
+          pinInjector1 = PD8; //Output pin injector 1 is on
+          pinInjector2 = PD9; //Output pin injector 2 is on
+          pinInjector3 = PD10; //Output pin injector 3 is on
+          pinInjector4 = PD11; //Output pin injector 4 is on
 
           pinCoil1 = PNUM_NOT_DEFINED; //Pin for coil 1
           pinCoil2 = PNUM_NOT_DEFINED; //Pin for coil 2
           pinCoil3 = PNUM_NOT_DEFINED; //Pin for coil 3
           pinCoil4 = PNUM_NOT_DEFINED; //Pin for coil 4
 
-          injectorOutputControl = OUTPUT_CONTROL_MC33810;
+          // injectorOutputControl = OUTPUT_CONTROL_MC33810;
           ignitionOutputControl = OUTPUT_CONTROL_MC33810;
           pinMC33810_1_CS = PB11;
           pinMC33810_1_ENABLE = PB12;
@@ -1617,7 +1614,7 @@ void setPinMapping(byte boardID)
   {
     initMC33810();
     pinMode(pinMC33810_1_ENABLE, OUTPUT);
-    digitalWrite(pinMC33810_1_ENABLE, true);
+    digitalWrite(pinMC33810_1_ENABLE, false);
     if( (LED_BUILTIN != SCK) && (LED_BUILTIN != MOSI) && (LED_BUILTIN != MISO) ) pinMode(LED_BUILTIN, OUTPUT); //This is required on as the LED pin can otherwise be reset to an input
   }
 
