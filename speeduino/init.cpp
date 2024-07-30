@@ -1274,18 +1274,29 @@ void setPinMapping(byte boardID)
         ignitionOutputControl = OUTPUT_CONTROL_MC33810;
         pinMC33810_1_CS = PB11; // move to define? like memory?
 
+        MC33810_BIT_INJ1 = 0;
+        MC33810_BIT_INJ2 = 1;
+        MC33810_BIT_INJ3 = 2;
+        MC33810_BIT_INJ4 = 3;
+        
+        MC33810_BIT_IGN1 = 4;
+        MC33810_BIT_IGN2 = 5;
+        MC33810_BIT_IGN3 = 6;
+        MC33810_BIT_IGN4 = 7;
+
         pinTrigger = PC6; // CKP
         pinTrigger2 = PC7; // CMP
 
         // Sensors:
         pinIAT = PA0; //ADC123
-        pinTPS = PA1; //ADC123
-        pinMAP = PA2; //ADC123
+        pinBat = PA1;  //ADC12
+        pinO2 = PA2; //ADC12
         pinCLT = PA3; //ADC123
-        pinO2 = PA4; //ADC12
-        pinBat = PA5;  //ADC12
-        pinFuelPressure = PNUM_NOT_DEFINED;
-        pinOilPressure = PNUM_NOT_DEFINED;        
+        pinTPS = PA4; //ADC123
+        pinMAP = PA5; //ADC123
+
+        pinFuelPressure = PA7;
+        pinOilPressure = PA6;        
         pinFlex = PNUM_NOT_DEFINED; // Flex sensor (Must be external interrupt enabled)
         pinBaro = PNUM_NOT_DEFINED; // SPI BARO on OpenEFI v4
 
@@ -1293,15 +1304,15 @@ void setPinMapping(byte boardID)
        // Outputs:
         pinTachOut = PE11; //
         pinBoost = PA6; //
-        pinIdle1 = PA7; //
-        pinVVT_1 = 4; //Default VVT output
-        pinFuelPump = 45; //Fuel pump output  (Goes to ULN2803)
-        pinFan = 47; //Pin for the fan output (Goes to ULN2803)
-        pinLaunch = 51; //Can be overwritten below
+        pinIdle1 = PNUM_NOT_DEFINED; //
+        pinVVT_1 = PE3; //Default VVT output
+        pinFuelPump = PE1; //Fuel pump output  (Goes to ULN2803)
+        pinFan = PE0; //Pin for the fan output (Goes to ULN2803)
+        pinLaunch = PE15; //Can be overwritten below
 
-        pinStepperDir = 16; //Direction pin  for DRV8825 driver
-        pinStepperStep = 17; //Step pin for DRV8825 driver
-        pinStepperEnable = 24; //Enable pin for DRV8825
+        pinStepperDir = PE8; //Direction pin  for DRV8825 driver
+        pinStepperStep = PE7; //Step pin for DRV8825 driver
+        pinStepperEnable = PE10; //Enable pin for DRV8825
   }
 
   //Setup any devices that are using selectable pins
