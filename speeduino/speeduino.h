@@ -29,7 +29,6 @@ extern uint16_t req_fuel_uS; /**< The required fuel variable (As calculated by T
 extern uint16_t inj_opentime_uS; /**< The injector opening time. This is set within Tuner Studio, but stored here in uS rather than mS */
 
 extern bool engineIsMoving; /** If the engine is moving, based on changes in trigger inputs */
-
 /** @name Staging
  * These values are a percentage of the total (Combined) req_fuel value that would be required for each injector channel to deliver that much fuel.   
  * 

@@ -5,6 +5,8 @@
 
 #include <SimplyAtomic.h>
 
+#include "speeduino.h"
+
 void initialiseAuxPWM(void);
 void boostControl(void);
 void boostDisable(void);
@@ -100,8 +102,6 @@ void fanInterrupt(void);
 
 extern uint16_t vvt_pwm_max_count; //Used for variable PWM frequency
 extern uint16_t boost_pwm_max_count; //Used for variable PWM frequency
-
-byte fpOffDelay;
 
 void boostInterrupt(void);
 void vvtInterrupt(void);
