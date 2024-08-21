@@ -28,4 +28,4 @@ test/output_export.cpp
 misra/.results
 ~$*
 local.ini
-.idea
+.idea/*

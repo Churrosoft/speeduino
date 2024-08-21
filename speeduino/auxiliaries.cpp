@@ -72,6 +72,8 @@ bool vvtTimeHold;
 uint16_t vvt_pwm_max_count; //Used for variable PWM frequency
 uint16_t boost_pwm_max_count; //Used for variable PWM frequency
 
+byte fpOffDelay;
+
 //Old PID method. Retained in case the new one has issues
 //integerPID boostPID(&MAPx100, &boost_pwm_target_value, &boostTargetx100, configPage6.boostKP, configPage6.boostKI, configPage6.boostKD, DIRECT);
 integerPID_ideal boostPID(&currentStatus.MAP, &currentStatus.boostDuty , &currentStatus.boostTarget, &configPage10.boostSens, &configPage10.boostIntv, configPage6.boostKP, configPage6.boostKI, configPage6.boostKD, DIRECT); //This is the PID object if that algorithm is used. Needs to be global as it maintains state outside of each function call
@@ -454,9 +456,9 @@ void fuelPumpControl()
        currentStatus.fuelPumpOn = true;
        fpOffDelay = 2; //0.2 sec delay for debouncing in case of noisy 
      }
-     else if(fpPrimed == false) // Engine not running and not primed
+     else if(currentStatus.fpPrimed == false) // Engine not running and not primed
      {
-       if( (currentStatus.secl - fpPrimeTime) >= configPage2.fpPrime) { fpPrimed = true; } //Mark the priming as being completed
+       if( (currentStatus.secl - fpPrimeTime) >= configPage2.fpPrime) { currentStatus.fpPrimed = true; } //Mark the priming as being completed
        else { currentStatus.fuelPumpOn = true; } // otherwise turn on the fuel pump
        fpOffDelay = 0;
      }
