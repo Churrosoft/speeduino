@@ -721,7 +721,7 @@ uint16_t getSpeed(void)
     }
 
     pulseTime = vssTotalTime / (VSS_SAMPLES - 1);
-    if ( (micros() - vssTimes[0]) > 1000000UL ) { tempSpeed = 0; } // Check that the car hasn't come to a stop
+    if ( (micros() - vssTimes[vssIndex]) > MICROS_PER_SEC ) { tempSpeed = 0; } // Check that the car hasn't come to a stop. Is true if last pulse was more than 1 second ago
     else 
     {
       tempSpeed = MICROS_PER_HOUR / (pulseTime * configPage2.vssPulsesPerKm); //Convert the pulse gap into km/h
