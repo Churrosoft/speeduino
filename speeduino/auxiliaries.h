@@ -5,6 +5,8 @@
 
 #include <SimplyAtomic.h>
 
+#include "speeduino.h"
+
 void initialiseAuxPWM(void);
 void boostControl(void);
 void boostDisable(void);
@@ -17,6 +19,7 @@ void fanControl(void);
 void airConControl(void);
 bool READ_AIRCON_REQUEST(void);
 void wmiControl(void);
+void fuelPumpControl();
 
 #define SIMPLE_BOOST_P  1
 #define SIMPLE_BOOST_I  1

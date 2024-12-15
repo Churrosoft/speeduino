@@ -110,7 +110,7 @@ ISR(ADC_vect)
     else { ADMUX++; }
 
   //ADMUX always appears to be one ahead of the actual channel value that is in ADCL/ADCH. Subtract 1 from it to get the correct channel number
-  if(nChannel == 0U) { nChannel = 16;} 
+  if(nChannel == 0U) { nChannel = 16;}
   AnChannel[nChannel-1] = (result_high << 8) | result_low;
 }
 #else
@@ -216,7 +216,7 @@ void initialiseADC(void)
       //  Do nothing. Keep MISRA checker happy
     }
   } //For loop iterating through aux in lines
-  
+
 
   //Sanity checks to ensure none of the filter values are set above 240 (Which would include the 255 value which is the default on a new arduino)
   //If an invalid value is detected, it's reset to the default the value and burned to EEPROM. 
